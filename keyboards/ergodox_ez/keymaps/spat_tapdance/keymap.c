@@ -34,6 +34,19 @@
 
 
 //=============  spatdsg - tap dance press and hold
+//============================= semicolon
+//single press will do a semicolon
+//press and hold - will do a colon
+
+//============================= arrows  no i tried this and it was dumb
+//press and hold - does normal repeat pattern
+//double tap - ctrl+arrow will jump blocks of text
+//double tap hold - ctrl+shift+arrow will select blocks of text
+//============================= HOME AND END
+//press and hold - will *select all* to home or all to end
+// double tap will jump to home or end of document
+
+
 
 typedef struct {
   bool is_press_action;
@@ -52,20 +65,41 @@ enum {
 
 //Tap dance enums
 //see https://jayliu50.github.io/qmk-cheatsheet/
+// I use X_(KEY) as in PRESS key.. so "PRESS LEFT ARROW"
 enum {
   X_CTL = 0,
-  SEMICOLON_PRESSANDHOLD_COLON = 1
+  SEMICOLON_PRESSANDHOLD_COLON = 1,
+  X_LFT_ARROW = 2,
+  X_RT_ARROW = 3,
+  X_KC_HOME = 4,
+  X_KC_END = 5
+
 };
 
 int cur_dance (qk_tap_dance_state_t *state);
 
 //for the x tap dance. Put it here so it can be used in any keymap
+//_finshed
+//_reset
 void x_finished (qk_tap_dance_state_t *state, void *user_data);
 void x_reset (qk_tap_dance_state_t *state, void *user_data);
 void SEMICOLON_PRESSANDHOLD_COLON_finished (qk_tap_dance_state_t *state, void *user_data);
 void SEMICOLON_PRESSANDHOLD_COLON_reset (qk_tap_dance_state_t *state, void *user_data);
 
+void X_LFT_ARROW_finished(qk_tap_dance_state_t *state, void *user_data);
+void X_LFT_ARROW_reset(qk_tap_dance_state_t *state, void *user_data);
+
+void X_RT_ARROW_finished(qk_tap_dance_state_t *state, void *user_data);
+void X_RT_ARROW_reset(qk_tap_dance_state_t *state, void *user_data);
+
+void X_KC_HOME_finished(qk_tap_dance_state_t *state, void *user_data);
+void X_KC_HOME_reset(qk_tap_dance_state_t *state, void *user_data);
+
+void X_KC_END_finished(qk_tap_dance_state_t *state, void *user_data);
+void X_KC_END_reset(qk_tap_dance_state_t *state, void *user_data);
+
 //============= end spatdsg - tap dance press and hold
+
 
 
 
@@ -89,13 +123,13 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_ergodox_pretty(
     KC_TAB,         KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           TG(1),                                          KC_PGDOWN,      KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_MINUS,
-    KC_DELETE,      KC_Q,           KC_W,           KC_F,           KC_P,           KC_B,           KC_LBRACKET,                                    KC_RBRACKET,    KC_J,           KC_L,           KC_U,           KC_Y,           KC_SCOLON,      KC_BSLASH,
+    KC_DELETE,      KC_Q,           KC_W,           KC_F,           KC_P,           KC_B,           KC_LBRACKET,                                    KC_RBRACKET,    KC_J,           KC_L,           KC_U,           KC_Y,           TD(SEMICOLON_PRESSANDHOLD_COLON),      KC_BSLASH,
     KC_BSPACE,      KC_A,           KC_R,           KC_S,           KC_T,           KC_G,                                                                           KC_K,           KC_N,           KC_E,           KC_O,           KC_I,           KC_QUOTE,
-    KC_LSHIFT,      KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,           KC_LALT,                                        KC_MEH,         KC_M,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_RSHIFT,
+    KC_LSHIFT,      KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,           KC_LALT,                                        TG(1),          KC_M,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_RSHIFT,
     KC_GRAVE,       WEBUSB_PAIR,    KC_TRANSPARENT, KC_LEFT,        KC_RIGHT,                                                                                                       KC_UP,          KC_DOWN,        KC_LBRACKET,    KC_RBRACKET,    MO(1),
-                                                                                                    KC_LGUI,        KC_HOME,        KC_LALT,        KC_EQUAL,
-                                                                                                                    KC_END,         KC_PGUP,
-                                                                                    LCTL_T(KC_ESCAPE),KC_TAB,         KC_END,         KC_PGDOWN,      KC_ENTER,       KC_SPACE
+                                                                                                    KC_LGUI,        TD(X_KC_HOME),        KC_LALT,        KC_EQUAL,
+                                                                                                                    TD(X_KC_END),         KC_PGUP,
+                                                                                    LCTL_T(KC_ESCAPE),KC_TAB,       TD(X_KC_END),         KC_PGDOWN,      KC_ENTER,       KC_SPACE
   ),
   [1] = LAYOUT_ergodox_pretty(
     KC_TRANSPARENT, KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,          KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
@@ -128,9 +162,11 @@ void keyboard_post_init_user(void) {
 }
 
 const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
-    [0] = { {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154}, {101,203,154} },
+    [0] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
 
-    [1] = { {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168}, {0,180,168} },
+    [1] = { {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213}, {0,240,213} },
+
+    [2] = { {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176}, {79,244,176} },
 
 };
 
@@ -159,6 +195,9 @@ void rgb_matrix_indicators_user(void) {
       break;
     case 1:
       set_layer_color(1);
+      break;
+    case 2:
+      set_layer_color(2);
       break;
    default:
     if (rgb_matrix_get_flags() == LED_FLAG_NONE)
@@ -236,7 +275,6 @@ uint32_t layer_state_set_user(uint32_t state) {
   }
   return state;
 };
-
 
 
 //=============  spatdsg - tap dance press and hold
@@ -337,6 +375,155 @@ void SEMICOLON_PRESSANDHOLD_COLON_reset (qk_tap_dance_state_t *state, void *user
 
 // END SPATDSG ===================== actual definitions of what to do here
 
+
+
+//============================= arrows
+//press and hold - does normal repeat pattern
+//double tap - ctrl+arrow will jump blocks of text
+//double tap hold - ctrl+shift+arrow will select blocks of text
+
+void X_LFT_ARROW_finished (qk_tap_dance_state_t *state, void *user_data) {
+  xtap_state.state = cur_dance(state);
+  switch (xtap_state.state) {
+    case SINGLE_TAP: register_code(KC_LEFT); break;  // on single tap it will print a semicolon
+    //case SINGLE_HOLD: register_code(KC_LEFT);
+    case DOUBLE_TAP: register_code(KC_LCTRL);register_code(KC_LEFT); break;
+    case DOUBLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_LEFT); break;
+    case DOUBLE_SINGLE_TAP: register_code(KC_LEFT); unregister_code(KC_LEFT); register_code(KC_LEFT);
+    //Last case is for fast typing. Assuming your key is `f`:
+    //For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
+    //In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  }
+}
+
+
+void X_LFT_ARROW_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (xtap_state.state) {
+    case SINGLE_TAP: unregister_code(KC_LEFT); break;  // on single tap it will print a semicolon
+    //case SINGLE_HOLD: register_code(KC_LEFT);
+    case DOUBLE_TAP: unregister_code(KC_LCTRL);unregister_code(KC_LEFT); break;
+    case DOUBLE_HOLD: unregister_code(KC_LCTRL);unregister_code(KC_LSHIFT);unregister_code(KC_LEFT); break;
+    case DOUBLE_SINGLE_TAP: unregister_code(KC_LEFT);
+  
+  }
+  xtap_state.state = 0;
+}
+
+
+void X_RT_ARROW_finished (qk_tap_dance_state_t *state, void *user_data) {
+  xtap_state.state = cur_dance(state);
+  switch (xtap_state.state) {
+    case SINGLE_TAP: register_code(KC_RIGHT); break;  // on single tap it will print a semicolon
+    //case SINGLE_HOLD: register_code(KC_LEFT);
+    case DOUBLE_TAP: register_code(KC_LCTRL);register_code(KC_RIGHT); break;
+    case DOUBLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_RIGHT); break;
+    case DOUBLE_SINGLE_TAP: register_code(KC_RIGHT); unregister_code(KC_RIGHT); register_code(KC_RIGHT);
+    //Last case is for fast typing. Assuming your key is `f`:
+    //For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
+    //In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  }
+}
+
+
+void X_RT_ARROW_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (xtap_state.state) {
+    case SINGLE_TAP: unregister_code(KC_RIGHT); break;  // on single tap it will print a semicolon
+    //case SINGLE_HOLD: register_code(KC_LEFT);
+    case DOUBLE_TAP: unregister_code(KC_LCTRL);unregister_code(KC_RIGHT); break;
+    case DOUBLE_HOLD: unregister_code(KC_LCTRL);unregister_code(KC_LSHIFT);unregister_code(KC_RIGHT); break;
+    case DOUBLE_SINGLE_TAP: unregister_code(KC_RIGHT);
+  
+  }
+  xtap_state.state = 0;
+}
+
+
+//============================= end arrows
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//============================= HOME AND END
+//press and hold - will *select all* to home or all to end
+// double tap will jump to home or end of document
+
+
+//home key
+void X_KC_HOME_finished (qk_tap_dance_state_t *state, void *user_data) {
+  xtap_state.state = cur_dance(state);
+  switch (xtap_state.state) {
+    case SINGLE_TAP: register_code(KC_HOME); break; 
+    case SINGLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_HOME); break;//press and hold - will *select all* to home or all to end
+    case DOUBLE_TAP: register_code(KC_LCTRL);register_code(KC_HOME); break; //double tap will jump to home or end of document
+    //case DOUBLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_LEFT); break;
+    case DOUBLE_SINGLE_TAP: register_code(KC_HOME); unregister_code(KC_HOME); register_code(KC_HOME);
+    //Last case is for fast typing. Assuming your key is `f`:
+    //For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
+    //In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  }
+}
+
+
+void X_KC_HOME_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (xtap_state.state) {
+    case SINGLE_TAP: unregister_code(KC_HOME); break; 
+    case SINGLE_HOLD: unregister_code(KC_LCTRL);unregister_code(KC_LSHIFT);unregister_code(KC_HOME); break;
+    case DOUBLE_TAP: unregister_code(KC_LCTRL);unregister_code(KC_HOME); break;
+    //case DOUBLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_LEFT); break;
+    case DOUBLE_SINGLE_TAP: unregister_code(KC_HOME);
+  
+  }
+  xtap_state.state = 0;
+}
+
+//end key
+void X_KC_END_finished (qk_tap_dance_state_t *state, void *user_data) {
+  xtap_state.state = cur_dance(state);
+  switch (xtap_state.state) {
+    case SINGLE_TAP: register_code(KC_END); break; 
+    case SINGLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_END); break;//press and hold - will *select all* to home or all to end
+    case DOUBLE_TAP: register_code(KC_LCTRL);register_code(KC_END); break; //double tap will jump to home or end of document
+    //case DOUBLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_LEFT); break;
+    case DOUBLE_SINGLE_TAP: register_code(KC_END); unregister_code(KC_END); register_code(KC_END);
+    //Last case is for fast typing. Assuming your key is `f`:
+    //For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
+    //In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
+  }
+}
+
+
+void X_KC_END_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (xtap_state.state) {
+    case SINGLE_TAP: unregister_code(KC_END); break; 
+    case SINGLE_HOLD: unregister_code(KC_LCTRL);unregister_code(KC_LSHIFT);unregister_code(KC_END); break;
+    case DOUBLE_TAP: unregister_code(KC_LCTRL);unregister_code(KC_END); break;
+    //case DOUBLE_HOLD: register_code(KC_LCTRL);register_code(KC_LSHIFT);register_code(KC_LEFT); break;
+    case DOUBLE_SINGLE_TAP: unregister_code(KC_END);
+  
+  }
+  xtap_state.state = 0;
+}
+
+
+//============================= end HOME AND END
+
+/*
+
+---- THIS WAS FROM THE ORIGINAL EXAMPLE ---
+
 void x_finished (qk_tap_dance_state_t *state, void *user_data) {
   xtap_state.state = cur_dance(state);
   switch (xtap_state.state) {
@@ -362,13 +549,32 @@ void x_reset (qk_tap_dance_state_t *state, void *user_data) {
   xtap_state.state = 0;
 }
 
+*/
 
+
+
+
+/*
+enum {
+  X_CTL = 0,
+  SEMICOLON_PRESSANDHOLD_COLON = 1,
+  X_LFT_ARROW = 2,
+  X_RT_ARROW = 3,
+  X_KC_HOME = 4,
+  X_KC_END = 5
+
+};
+
+*/
 
 //see https://jayliu50.github.io/qmk-cheatsheet/
 qk_tap_dance_action_t tap_dance_actions[] = {
-  [X_CTL]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,x_finished, x_reset),
-  [SEMICOLON_PRESSANDHOLD_COLON]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,SEMICOLON_PRESSANDHOLD_COLON_finished, SEMICOLON_PRESSANDHOLD_COLON_reset)
-  
+  //[X_CTL]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,x_finished, x_reset),
+  [SEMICOLON_PRESSANDHOLD_COLON]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,SEMICOLON_PRESSANDHOLD_COLON_finished, SEMICOLON_PRESSANDHOLD_COLON_reset),
+  [X_LFT_ARROW]   = ACTION_TAP_DANCE_FN_ADVANCED(NULL,X_LFT_ARROW_finished, X_LFT_ARROW_reset),
+  [X_RT_ARROW]   = ACTION_TAP_DANCE_FN_ADVANCED(NULL,X_RT_ARROW_finished, X_RT_ARROW_reset),
+  [X_KC_HOME]  = ACTION_TAP_DANCE_FN_ADVANCED(NULL,X_KC_HOME_finished, X_KC_HOME_reset),
+  [X_KC_END]  = ACTION_TAP_DANCE_FN_ADVANCED(NULL,X_KC_END_finished, X_KC_END_reset)
 };
 
 //============= end spatdsg - tap dance press and hold
